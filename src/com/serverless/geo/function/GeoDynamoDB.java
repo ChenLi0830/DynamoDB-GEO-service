@@ -48,10 +48,6 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 
-/**
- * Lambda function that simply prints "Hello World" if the input String is not provided,
- * otherwise, print "Hello " with the provided input String.
- */
 public class GeoDynamoDB implements RequestHandler<ServerlessInput, ServerlessOutput> {
 	private static final long serialVersionUID = 1L;
 
