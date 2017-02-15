@@ -113,9 +113,12 @@ public class GeoDynamoDB implements RequestHandler<ServerlessInput, ServerlessOu
 //				updatePoint(requestObject, out);
 //			} else if (action.equalsIgnoreCase("query-rectangle")) {
 //				queryRectangle(requestObject, out);
-//			} else if (action.equalsIgnoreCase("query-radius")) {
-//				queryRadius(requestObject, out);
-//			} else if (action.equalsIgnoreCase("delete-point")) {
+//			} 
+			else if (action.equalsIgnoreCase("query-radius")) {
+				output.setBody(queryRadius(requestObject));
+				output.setStatusCode(200);
+			}
+//				else if (action.equalsIgnoreCase("delete-point")) {
 //				deletePoint(requestObject, out);
 //			}
 		} catch (Exception e) {
@@ -127,6 +130,7 @@ public class GeoDynamoDB implements RequestHandler<ServerlessInput, ServerlessOu
         return output;        
     }
 	
+	//需要的props - lat, lng, schoolName
 	private void putPoint(JSONObject requestObject) throws IOException, JSONException {
 		System.out.println("putPoint start");
 		System.out.println("requestObject" + requestObject.toString());
@@ -156,5 +160,57 @@ public class GeoDynamoDB implements RequestHandler<ServerlessInput, ServerlessOu
 		jsonMap.put("action", "put-point");
 		
 		System.out.println(mapper.writeValueAsString(jsonMap));
+	}
+	
+	//需要的props - lat, lng, radiusInMeter
+	private String queryRadius(JSONObject requestObject) throws IOException, JSONException {
+		System.out.println("queryRadius start");
+		GeoPoint centerPoint = new GeoPoint(requestObject.getDouble("lat"), requestObject.getDouble("lng"));
+		double radiusInMeter = requestObject.getDouble("radiusInMeter");
+		
+		List<String> attributesToGet = new ArrayList<String>();
+		attributesToGet.add(config.getRangeKeyAttributeName());
+		attributesToGet.add(config.getGeoJsonAttributeName());
+		attributesToGet.add("schoolName");
+
+		QueryRadiusRequest queryRadiusRequest = new QueryRadiusRequest(centerPoint, radiusInMeter);
+		queryRadiusRequest.getQueryRequest().setAttributesToGet(attributesToGet);
+		QueryRadiusResult queryRadiusResult = geoDataManager.queryRadius(queryRadiusRequest);
+
+		return printGeoQueryResult(queryRadiusResult);
+	}
+
+	private String printGeoQueryResult(GeoQueryResult geoQueryResult) throws JsonParseException, IOException {
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		List<Map<String, String>> resultArray = new ArrayList<Map<String, String>>();
+
+		for (Map<String, AttributeValue> item : geoQueryResult.getItem()) {
+			Map<String, String> itemMap = new HashMap<String, String>();
+
+			String geoJsonString = item.get(config.getGeoJsonAttributeName()).getS();
+			JsonParser jsonParser = factory.createJsonParser(geoJsonString);
+			JsonNode jsonNode = mapper.readTree(jsonParser);
+
+			double latitude = jsonNode.get("coordinates").get(0).getDoubleValue();
+			double longitude = jsonNode.get("coordinates").get(1).getDoubleValue();
+			String rangeKey = item.get(config.getRangeKeyAttributeName()).getS();
+			String schoolName = "";
+			if (item.containsKey("schoolName")) {
+				schoolName = item.get("schoolName").getS();
+			}
+
+			itemMap.put("latitude", Double.toString(latitude));
+			itemMap.put("longitude", Double.toString(longitude));
+			itemMap.put("rangeKey", rangeKey);
+			itemMap.put("schoolName", schoolName);
+
+			resultArray.add(itemMap);
+		}
+
+		jsonMap.put("action", "query");
+		jsonMap.put("result", resultArray);
+
+		System.out.println(mapper.writeValueAsString(jsonMap));
+		return mapper.writeValueAsString(jsonMap);
 	}
 }

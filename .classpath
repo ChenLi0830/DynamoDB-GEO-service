@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="/Users/Chen/Downloads/dynamodb-geo-master/dynamodb-geo-master/lib/guava-r09/guava-r09.jar"/>
 	<classpathentry kind="lib" path="/Users/Chen/Downloads/dynamodb-geo-master/dynamodb-geo-master/lib/s2-geometry-library/s2-geometry-java.jar"/>
 	<classpathentry kind="lib" path="/Users/Chen/Downloads/org.codehaus.jackson.core.jar/org.codehaus.jackson.core.jar"/>
-	<classpathentry kind="lib" path="/Users/Chen/Downloads/org.codehaus.jackson.mapper.jar/org.codehaus.jackson.mapper.jar"/>
+	<classpathentry kind="lib" path="/Users/Chen/Downloads/org.codehaus.jackson.mapper.jar/org.codehaus.jackson.mapper.jar" sourcepath="/Users/Chen/.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.4.3/jackson-mapper-asl-1.4.3-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
