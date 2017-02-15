@@ -1,0 +1,5 @@
+#Lambda Function Project Metadata
+#Tue Feb 14 19:27:59 PST 2017
+lastDeploymentFunctionName=DynamoDB-GEO-devstack-HelloWorld-1B6C2IBGUOYM9
+lastDeploymentBucketName=lambda-function-bucket-us-west-2-1487040983696
+lastDeploymentEndpoint=https\://lambda.us-west-2.amazonaws.com/
